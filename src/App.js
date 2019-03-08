@@ -10,6 +10,8 @@ import {
 const Menu = props => {
   const anecdotes = props.anecdotes
   const addNew = props.addNew
+  const created = props.created
+  const setCreated = props.setCreated
   const padding = {
     paddingRight: 5
   }
@@ -44,6 +46,7 @@ const Menu = props => {
               render={() => (
                 <AnecdoteList
                   anecdotes={anecdotes}
+                  setCreated={setCreated}
                 />
               )}
             />
@@ -67,8 +70,10 @@ const Menu = props => {
               exact
               path="/createnew"
               render={() => (
+                created ? <Redirect to='/' />
+                :
                 <CreateNew
-                  addNew={addNew}
+                  addNew={addNew} setCreated={setCreated}
                 />
               )}
             />
@@ -102,9 +107,12 @@ const Anecdote = ({ anecdote }) => {
   }
 
 const AnecdoteList = ({
-  anecdotes
-}) => (
+  anecdotes, setCreated
+}) => {
+  setCreated(false)
+return (
   <div>
+
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map(anecdote => (
@@ -120,7 +128,7 @@ const AnecdoteList = ({
       ))}
     </ul>
   </div>
-)
+)}
 
 const About = () => (
   <div>
@@ -187,6 +195,8 @@ const CreateNew = props => {
       info,
       votes: 0
     })
+    console.log('handleSubmitissa nyt!!')
+    props.setCreated(true)
   }
 
   const Home = props => {
@@ -241,6 +251,8 @@ const CreateNew = props => {
 }
 
 const App = () => {
+  const [created, setCreated] = useState(false)
+
   const [
     anecdotes,
     setAnecdotes
@@ -312,6 +324,10 @@ const App = () => {
     setAnecdotes(
       anecdotes.concat(anecdote)
     )
+    setNotification(`You added new anecdote ${anecdote.content}`)
+    setTimeout(() => {
+      setNotification('')
+    }, 10000)
   }
 
   const anecdoteById = id =>
@@ -335,9 +351,13 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
+      <p>{notification}</p>
+
       <Menu
         anecdotes={anecdotes}
         addNew={addNew}
+        created={created}
+        setCreated={setCreated}
       />
       <Footer />
     </div>
