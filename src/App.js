@@ -38,30 +38,68 @@ const Menu = props => {
             </Link>
           </div>
           <div>
-          
-          <Route
-            exact path="/"
-            render={() =>
-            <AnecdoteList anecdotes = {anecdotes} /> 
-            }          />
-          <Route
-            exact path="/createnew"
-            render={() => 
-              <CreateNew addNew={addNew} />
-            }
-          />
-          <Route
-            exact path="/about"
-            render={() => 
-              <About />
-            }
-          />
+            <Route
+              exact
+              path="/"
+              render={() => (
+                <AnecdoteList
+                  anecdotes={anecdotes}
+                />
+              )}
+            />
+            <Route
+              exact path="/anecdotes/:id"
+              render={({ match }) => {
+              console.log('Routessa anecdote/:id match on ', match)
+              return (
+                <Anecdote
+                  anecdote={anecdotes.find(
+                    x =>
+                      Number(x.id) ===
+                      Number(
+                        match.params.id
+                      )
+                  )}
+                />)}}
+              
+            />
+            <Route
+              exact
+              path="/createnew"
+              render={() => (
+                <CreateNew
+                  addNew={addNew}
+                />
+              )}
+            />
+            <Route
+              exact
+              path="/about"
+              render={() => <About />}
+            />
           </div>
         </div>
       </Router>
     </div>
   )
 }
+
+const Anecdote = ({ anecdote }) => {
+  console.log('anecdote on Anecdotessa ', anecdote)
+  return(
+  <div>
+    <h2>{anecdote.content}</h2>
+    <p>by {anecdote.author}</p>
+    <p>has {anecdote.votes} votes</p>
+    <div>
+      For more info see{" "}
+      <a href={anecdote.info}>
+        {anecdote.info}
+      </a>
+    </div>
+  </div>
+  )
+  }
 
 const AnecdoteList = ({
   anecdotes
@@ -71,7 +109,13 @@ const AnecdoteList = ({
     <ul>
       {anecdotes.map(anecdote => (
         <li key={anecdote.id}>
-          {anecdote.content}
+          <Link
+            to={`anecdotes/${
+              anecdote.id
+            }`}
+          >
+            {anecdote.content}
+          </Link>
         </li>
       ))}
     </ul>
@@ -118,8 +162,8 @@ const Footer = () => (
       Full Stack -sovelluskehitys
     </a>
     . See{" "}
-    <a href="https://github.com/fullstack-hy2019/routed-anecdotes/blob/master/src/App.js">
-      https://github.com/fullstack-hy2019/routed-anecdotes/blob/master/src/App.js
+    <a href="https://github.com/epicharri/routed-anecdotes">
+      https://github.com/epicharri/routed-anecdotes{" "}
     </a>{" "}
     for the source code.
   </div>
@@ -145,13 +189,15 @@ const CreateNew = props => {
     })
   }
 
-  const Home = (props) => {
-    return (<div>
-      <h1>Software anecdotes</h1>
-      <Menu toPage={props.toPage} />
-      {props.vaihtoehdot()}
-      <Footer />
-    </div>);
+  const Home = props => {
+    return (
+      <div>
+        <h1>Software anecdotes</h1>
+        <Menu toPage={props.toPage} />
+        {props.vaihtoehdot()}
+        <Footer />
+      </div>
+    )
   }
 
   return (
@@ -232,7 +278,7 @@ const App = () => {
     notification,
     setNotification
   ] = useState("")
-/*
+  /*
   const vaihtoehdot = () => {
     if (page === 'home') {
       return(      
@@ -286,13 +332,16 @@ const App = () => {
     )
   }
 
-    return (<div>
+  return (
+    <div>
       <h1>Software anecdotes</h1>
-      <Menu anecdotes={anecdotes} addNew={addNew} />
+      <Menu
+        anecdotes={anecdotes}
+        addNew={addNew}
+      />
       <Footer />
-    </div>)
-    
-  
+    </div>
+  )
 }
 
 export default App
